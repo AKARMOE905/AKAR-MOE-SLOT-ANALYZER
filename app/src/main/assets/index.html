@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AKAR MOE SLOT ANALYZER</title>
+<style>
+:root{--bg:#050b08;--panel:#0b1711;--green:#39ff88;--muted:#9ab6a4;--line:#174b30}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#10271a,#050b08 55%);color:#e8fff0;font-family:Arial,sans-serif}
+header{padding:22px 16px 14px;text-align:center;border-bottom:1px solid var(--line)}
+h1{font-size:21px;letter-spacing:1.5px;color:var(--green);margin:0 0 7px;text-shadow:0 0 12px #39ff8866}
+.sub{font-size:12px;color:var(--muted)}main{max-width:680px;margin:auto;padding:14px}
+.card{background:linear-gradient(145deg,#0d1d14,#08110c);border:1px solid var(--line);border-radius:14px;padding:15px;margin:12px 0;box-shadow:0 8px 24px #0006}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 5px}
+input,select{width:100%;padding:12px;border-radius:9px;border:1px solid #24583a;background:#06100a;color:#fff;font-size:16px;outline:none}
+button{border:1px solid #39ff88;background:#0b2b19;color:var(--green);padding:12px 14px;border-radius:9px;font-weight:bold}
+button.primary{background:var(--green);color:#031108;width:100%;margin-top:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#06100a;border:1px solid #174b30;padding:12px;border-radius:10px}.stat small{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;color:var(--green);font-size:19px;margin-top:5px}
+.note{font-size:12px;line-height:1.5;color:#b5cbbd}.danger{color:#ffd27a}.history{font-size:13px;color:#cce5d4;border-top:1px solid #174b30;padding:9px 0}
+footer{text-align:center;color:#668775;font-size:11px;padding:20px}
+</style></head>
+<body>
+<header><h1>AKAR MOE SLOT ANALYZER</h1><div class="sub">OFFLINE • SESSION TRACKER • HACKER GREEN EDITION</div></header>
+<main>
+<div class="card">
+ <label>ဂိမ်းအမျိုးအစား</label>
+ <select id="provider"><option>JILI</option><option>PG</option><option>777</option><option>အခြား</option></select>
+ <label>ဂိမ်းအမည် (မဖြည့်လည်းရ)</label><input id="game" placeholder="ဥပမာ - ဂိမ်းအမည်">
+ <div class="row">
+  <div><label>စတင်ငွေ</label><input id="start" type="number" min="0" placeholder="0"></div>
+  <div><label>လက်ရှိလက်ကျန်ငွေ</label><input id="balance" type="number" min="0" placeholder="0"></div>
+ </div>
+ <div class="row">
+  <div><label>စုစုပေါင်း လောင်းငွေ</label><input id="wager" type="number" min="0" placeholder="0"></div>
+  <div><label>စုစုပေါင်း ပြန်ရငွေ</label><input id="payout" type="number" min="0" placeholder="0"></div>
+ </div>
+ <button class="primary" onclick="calculate()">ANALYZE / တွက်ချက်မယ်</button>
+</div>
+<div class="card">
+ <div class="stats">
+  <div class="stat"><small>အသားတင် အမြတ် / အရှုံး</small><strong id="net">—</strong></div>
+  <div class="stat"><small>Observed Return</small><strong id="rtp">—</strong></div>
+  <div class="stat"><small>အမြတ် / အရှုံး ရာခိုင်နှုန်း</small><strong id="pct">—</strong></div>
+  <div class="stat"><small>မှတ်တမ်းအရေအတွက်</small><strong id="count">0</strong></div>
+ </div>
+ <p class="note danger">သတိပြုရန် — ဒီတွက်ချက်မှုက သင်ထည့်သွင်းထားတဲ့ အချက်အလက်အပေါ်မူတည်တဲ့ မှတ်တမ်းစာရင်းသာ ဖြစ်ပါတယ်။ နောက်တစ်ကြိမ်နိုင်မယ့်အချိန်၊ Slot ရလဒ်၊ RNG ကို ကြိုတင်မခန့်မှန်းနိုင်ပါ။ Observed Return သည် ဂိမ်း၏ တရားဝင် RTP မဟုတ်ပါ။</p>
+</div>
+<div class="card">
+ <div class="row" style="align-items:center"><strong style="color:var(--green)">Session မှတ်တမ်း</strong><button onclick="clearHistory()">မှတ်တမ်းဖျက်မယ်</button></div>
+ <div id="history"><p class="note">မှတ်တမ်းမရှိသေးပါ။</p></div>
+</div>
+</main>
+<footer>Data ကို ဒီဖုန်း Browser Storage ထဲမှာသာ သိမ်းဆည်းပါတယ်။ Internet မလိုပါ။</footer>
+<script>
+const $=id=>document.getElementById(id);
+function fmt(n){return Number(n).toLocaleString(undefined,{maximumFractionDigits:2})}
+function calculate(){
+ const start=Number($('start').value||0), balance=Number($('balance').value||0),
+ wager=Number($('wager').value||0), payout=Number($('payout').value||0);
+ if([start,balance,wager,payout].some(x=>x<0)||wager===0){alert('လောင်းငွေကို 0 ထက်ကြီးအောင် ထည့်ပါ။');return}
+ const net=balance-start, rtp=payout/wager*100, pct=start>0?net/start*100:0;
+ $('net').textContent=(net>0?'+':'')+fmt(net);
+ $('rtp').textContent=fmt(rtp)+'%'; $('pct').textContent=fmt(pct)+'%';
+ const arr=JSON.parse(localStorage.getItem('sessions')||'[]');
+ arr.unshift({date:new Date().toLocaleString(),provider:$('provider').value,game:$('game').value||'-',net,rtp,wager,payout});
+ localStorage.setItem('sessions',JSON.stringify(arr.slice(0,100))); render();
+}
+function render(){
+ const arr=JSON.parse(localStorage.getItem('sessions')||'[]');$('count').textContent=arr.length;
+ $('history').innerHTML=arr.length?arr.map(x=>`<div class="history"><b>${x.provider}</b> • ${escapeHtml(x.game)}<br>${x.date}<br>Net: <b>${x.net>=0?'+':''}${fmt(x.net)}</b> | Observed Return: ${fmt(x.rtp)}%</div>`).join(''):'<p class="note">မှတ်တမ်းမရှိသေးပါ။</p>';
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function clearHistory(){if(confirm('မှတ်တမ်းအားလုံး ဖျက်မှာ သေချာပါသလား။')){localStorage.removeItem('sessions');render()}}
+render();
+</script></body></html>
